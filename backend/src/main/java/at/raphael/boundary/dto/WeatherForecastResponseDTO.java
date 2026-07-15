@@ -4,9 +4,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record WeatherForecastResponseDTO(
+        int status,
         CurrentWeatherDTO current,
         HourlyWeatherDTO hourly
 ) {
+
+    //Default value of status
+    public WeatherForecastResponseDTO{
+        if (status == 0) status = 200;
+    }
+
     public record CurrentWeatherDTO(
             LocalDateTime time,
             Integer interval,

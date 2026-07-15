@@ -4,6 +4,7 @@ import at.raphael.boundary.client.WeatherForecastClient;
 import at.raphael.boundary.dto.GeoCodeResponseDTO;
 import at.raphael.boundary.dto.WeatherForecastResponseDTO;
 import at.raphael.service.GeoCodeService;
+import at.raphael.service.WeatherForecastService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -16,8 +17,8 @@ public class PdfResource {
     @Inject
     GeoCodeService geoCodeService;
 
-    @RestClient
-    WeatherForecastClient weatherForecastClient;
+    @Inject
+    WeatherForecastService weatherForecastService;
 
     @GET
     @Path("weatherFromAddress")
@@ -28,12 +29,7 @@ public class PdfResource {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        WeatherForecastResponseDTO weatherForecastResponseDTO = weatherForecastClient.getWeatherForecastOfPosition(
-                geoResponseDTO.position().latitude(),
-                geoResponseDTO.position().longitude(),
-                "temperature_2m,wind_speed_10m",
-                "temperature_2m,relative_humidity_2m,wind_speed_10m"
-        );
+        WeatherForecastResponseDTO weatherForecastResponseDTO = weatherForecastService.getFromGeoCodeResponseDTO(geoResponseDTO);
 
         return Response.ok(weatherForecastResponseDTO).build();
     }

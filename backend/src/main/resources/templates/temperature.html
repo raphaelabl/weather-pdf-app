@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Wetterbericht</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #2a2a2a;
+      margin: 24px;
+      background: #f7f9fc;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    }
+
+    .h1-main {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+      font-weight: 700; /* statt font-width */
+      color: #2f3b52;
+    }
+
+    .subline {
+      margin: 0 0 20px 0;
+      color: #667085;
+      font-size: 14px;
+    }
+
+    .cards {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .card {
+      flex: 1 1 180px;
+      background: #f1f5ff;
+      border: 1px solid #dbe5ff;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .card .label {
+      font-size: 12px;
+      color: #5b6475;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .card .value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1d2a44;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 13px;
+      background: #fff;
+    }
+
+    thead th {
+      background: #eef3ff;
+      color: #344054;
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid #dbe5ff;
+    }
+
+    tbody td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #eef2f7;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #fafcff;
+    }
+
+    .chart-box {
+      margin-top: 20px;
+      padding: 12px;
+      border: 1px solid #e6ebf2;
+      border-radius: 10px;
+      background: #fcfdff;
+    }
+
+    .chart-box h3 {
+      margin: 0 0 10px 0;
+      font-size: 15px;
+      color: #344054;
+    }
+
+    .chart-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 6px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1 class="h1-main">Wetterdaten für {addressString}</h1>
+  <p class="subline">Stand: {currentTime}, Position: {latitude}, {longitude}</p>
+
+  <div class="cards">
+    <div class="card">
+      <div class="label">Aktuelle Temperatur</div>
+      <div class="value">{currentTemp} °C</div>
+    </div>
+    <div class="card">
+      <div class="label">Wind (10m)</div>
+      <div class="value">{currentWind} km/h</div>
+    </div>
+    <div class="card">
+      <div class="label">Datensätze (stündlich)</div>
+      <div class="value">{hourlyCount}</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Zeit</th>
+      <th>Temp (°C)</th>
+      <th>Luftfeuchte (%)</th>
+      <th>Wind (km/h)</th>
+    </tr>
+    </thead>
+    <tbody>
+    {#for row in hourlyRows}
+      <tr>
+        <td>{row.time}</td>
+        <td>{row.temperature}</td>
+        <td>{row.humidity}</td>
+        <td>{row.wind}</td>
+      </tr>
+    {/for}
+    </tbody>
+  </table>
+
+  <!-- PDF-stabiler Chart als Bild-URL -->
+  {#if chartUrl}
+    <div class="chart-box">
+      <h3>Temperaturverlauf</h3>
+      <img src="{chartUrl}" alt="Temperatur Chart">
+    </div>
+  {/if}
+</div>
+</body>
+</html>

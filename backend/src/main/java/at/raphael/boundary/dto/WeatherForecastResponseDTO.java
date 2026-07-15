@@ -10,9 +10,9 @@ public record WeatherForecastResponseDTO(
 ) {
 
     //Default value of status
-    /*public WeatherForecastResponseDTO{
+    public WeatherForecastResponseDTO{
         if (status == 0) status = 200;
-    }*/
+    }
 
     public record CurrentWeatherDTO(
             LocalDateTime time,

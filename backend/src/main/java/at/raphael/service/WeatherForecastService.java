@@ -27,7 +27,7 @@ public class WeatherForecastService {
                         "temperature_2m,relative_humidity_2m,wind_speed_10m"
                 );
 
-        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+        if (response.getStatus() == Response.Status.OK.getStatusCode()) {
             return response.readEntity(WeatherForecastResponseDTO.class);
         }
 

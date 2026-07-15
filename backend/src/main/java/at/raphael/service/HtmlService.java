@@ -39,7 +39,7 @@ public class HtmlService {
 
         WeatherForecastResponseDTO weatherForecastResponseDTO = weatherForecastService.getFromGeoCodeResponseDTO(geoCodeResponseDTO);
 
-        if(weatherForecastResponseDTO.status() != 200){
+        if(weatherForecastResponseDTO.status() != 200 && weatherForecastResponseDTO.status() != 0){
             return errorResponse
                     .data("error-message", "Weather-Data could not be Loaded")
                     .render();

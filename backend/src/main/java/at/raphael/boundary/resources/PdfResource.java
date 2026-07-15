@@ -1,37 +1,45 @@
 package at.raphael.boundary.resources;
 
+import at.raphael.boundary.client.GeoCodeClient;
 import at.raphael.boundary.client.WeatherForecastClient;
 import at.raphael.boundary.dto.GeoCodeResponseDTO;
+import at.raphael.boundary.dto.HtmlToPdfDTO;
 import at.raphael.boundary.dto.WeatherForecastResponseDTO;
 import at.raphael.service.GeoCodeService;
 import at.raphael.service.WeatherForecastService;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 @Path("pdf")
 public class PdfResource {
 
-    @Inject
-    GeoCodeService geoCodeService;
+    @RestClient
+    GeoCodeClient geoCodeClient;
 
-    @Inject
-    WeatherForecastService weatherForecastService;
+    @POST
+    @Produces("application/pdf")
+    public Response getWeatherPdfFromAddress(String htmlContent){
+        HtmlToPdfDTO htmlToPdfDTO = new HtmlToPdfDTO(htmlContent);
 
-    @GET
-    @Path("weatherFromAddress")
-    public Response getWeatherPdfFromAddress(){
-        GeoCodeResponseDTO geoResponseDTO = geoCodeService.getGeoCodeFromAddress("Mühlbachweg 18, 4901 Ottnang");
+        Response response = geoCodeClient.getPdfFromHTML(htmlToPdfDTO);
 
-        if(geoResponseDTO == null){
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
+        byte[] pdf = response.readEntity(byte[].class);
 
-        WeatherForecastResponseDTO weatherForecastResponseDTO = weatherForecastService.getFromGeoCodeResponseDTO(geoResponseDTO);
+        return Response.ok(pdf, "application/pdf")
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"document.pdf\""
+                )
+                .header(
+                        HttpHeaders.CONTENT_LENGTH,
+                        pdf.length
+                )
+                .build();
 
-        return Response.ok(weatherForecastResponseDTO).build();
     }
 
 }

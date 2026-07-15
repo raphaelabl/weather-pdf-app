@@ -20,19 +20,14 @@ public class GeoCodeService {
      * @return GeoCodeResponseDTO or Status code if not found
      */
     public GeoCodeResponseDTO getGeoCodeFromAddress(String address) {
-        /*Response response = geoCodeClient.getGeoCodeFromAddress(address);
+        Response response = geoCodeClient.getGeoCodeFromAddress(address);
 
         if(response.getStatus() == Response.Status.OK.getStatusCode()) {
             return response.readEntity(GeoCodeResponseDTO.class);
         }
 
-        return new GeoCodeResponseDTO(response.getStatus(), null, null);*/
+        return new GeoCodeResponseDTO(response.getStatus(), null, null);
 
-        return new GeoCodeResponseDTO(
-                Response.Status.OK.getStatusCode(),
-                new PositionResponseDTO(52.52f, 13.419998f),
-                new AddressResponseDTO("Mühlbachweg", "18", "4901", "Ottnang", "Austria", "AT")
-        );
     }
 
 }

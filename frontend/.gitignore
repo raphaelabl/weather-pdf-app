@@ -44,3 +44,5 @@ Thumbs.db
 /.vscode/extensions.json
 /.vscode/launch.json
 /.vscode/tasks.json
+/src/environments/environment.development.ts
+/src/environments/environment.ts

@@ -155,7 +155,7 @@ ng serve
 ### 1. HTML-Wetterprognose abrufen
 **Anfrage:**
 ```http
-GET http://localhost:8080/html?query=Mühlbachweg%2018,%204901%20Ottnang%20am%20Hausruck
+GET http://localhost:8080/html?query=Wien,%20Austria
 ```
 
 **Parameter:**

@@ -1,0 +1,79 @@
+services:
+# Dev environment for ORY Kratos with a Postgres database and a self-service UI.
+# ── ORY Kratos: Database ────────────────────────────
+  kratos-postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: kratos
+      POSTGRES_PASSWORD: kratos
+      POSTGRES_DB: kratos
+    volumes:
+      - kratos-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kratos -d kratos"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks: [ory]
+
+  # ── ORY Kratos: Database Migrations ─────────────────
+  kratos-migrate:
+    image: oryd/kratos:v26.2.0
+    depends_on:
+      kratos-postgres:
+        condition: service_healthy
+    environment:
+      DSN: postgres://kratos:kratos@kratos-postgres:5432/kratos?sslmode=disable
+    volumes:
+      - ./kratos:/etc/config/kratos:ro
+    command: migrate sql -e --yes
+    restart: on-failure
+    networks: [ory]
+
+  # ── ORY Kratos: Identity Server ──────────────────────────
+  kratos:
+    image: oryd/kratos:v26.2.0
+    depends_on:
+      kratos-migrate:
+        condition: service_completed_successfully
+    environment:
+      DSN: postgres://kratos:kratos@kratos-postgres:5432/kratos?sslmode=disable
+      LOG_LEVEL: debug
+    volumes:
+      - ./kratos:/etc/config/kratos:ro
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    ports:
+      - "4433:4433" # Public API: Browser, Angular, Quarkus whoami
+      - "4434:4434" # Admin API: not to be exposed publicly
+    networks: [ory]
+
+  # ── ORY Login/Consent App ───────────────────────────
+  kratos-ui:
+    image: oryd/kratos-selfservice-ui-node:v26.2.0
+    depends_on: [kratos]
+    environment:
+      KRATOS_PUBLIC_URL: http://kratos:4433
+      KRATOS_BROWSER_URL: http://localhost:4433
+      KRATOS_ADMIN_URL: http://kratos:4434
+      COOKIE_SECRET: ${KRATOS_COOKIE_SECRET:-change-me-cookie-secret}
+      CSRF_COOKIE_NAME: ory_csrf_token
+      CSRF_COOKIE_SECRET: ${KRATOS_CSRF_COOKIE_SECRET:-change-me-csrf-secret}
+      DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES: "true"
+    ports:
+      - "3000:3000"
+    networks: [ory]
+
+  # ── Local SMTP Server for Verification and Recovery Emails ────────
+  mailpit:
+    image: axllent/mailpit:v1.29.0
+    restart: unless-stopped
+    ports:
+    - "127.0.0.1:1025:1025"
+    - "127.0.0.1:8025:8025"
+    networks: [ory]
+
+volumes:
+  kratos-postgres-data:
+
+networks:
+  ory:

@@ -1,14 +1,18 @@
-import {ChangeDetectorRef, Component, SecurityContext} from '@angular/core';
+import {ChangeDetectorRef, Component, SecurityContext, ChangeDetectionStrategy} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {DomSanitizer, SafeHtml} from '@angular/platform-browser';
 import {Http} from '../../services/http';
+import {AuthService} from '../../services/auth-service';
+import {AsyncPipe} from '@angular/common';
 
 @Component({
   selector: 'app-weather-forecast',
   imports: [
-    FormsModule
+    FormsModule,
+    AsyncPipe
   ],
   templateUrl: './weather-forecast.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './weather-forecast.css',
 })
 export class WeatherForecast {
@@ -28,7 +32,7 @@ export class WeatherForecast {
 
   forecasts: SafeHtml[] = []
 
-  constructor(private http: Http, private sanitizer: DomSanitizer, private cdr: ChangeDetectorRef) { }
+  constructor(private http: Http, private sanitizer: DomSanitizer, private cdr: ChangeDetectorRef, public authService: AuthService) { }
 
   getForecast(){
     var addressString = `${this.addressStruct.street} ${this.addressStruct.houseNumber}, ${this.addressStruct.postalCode} ${this.addressStruct.city}`;

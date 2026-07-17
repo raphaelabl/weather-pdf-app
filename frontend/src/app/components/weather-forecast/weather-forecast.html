@@ -1,3 +1,22 @@
+<div class="flex flex-row w-full bg-white">
+  @if (authService.session$ | async; as session) {
+    <p>
+      Angemeldet als
+      <strong>{{ session.identity.traits.email }}</strong>
+    </p>
+    <button type="button" (click)="authService.logout()">
+      Abmelden
+    </button>
+  } @else {
+    <button type="button" (click)="authService.login()">
+      Anmelden
+    </button>
+    <button type="button" (click)="authService.register()">
+      Registrieren
+    </button>
+  }
+</div>
+
 <div class="flex w-full justify-center bg-[#f0f0f0] py-10">
   <form class="flex flex-col gap-4 w-1/2" (ngSubmit)="getForecast()">
     <h1 class="text-3xl w-full text-center">Wetterprognose für</h1>
